@@ -54,7 +54,7 @@ class AppColors {
 
   // -- Shadows --
   static BoxShadow softShadow = BoxShadow(
-    color: const Color(0xFF64748B).withOpacity(0.08),
+    color: Color.fromRGBO(100, 116, 139, 0.08),
     spreadRadius: 0,
     blurRadius: 20,
     offset: const Offset(0, 4),
