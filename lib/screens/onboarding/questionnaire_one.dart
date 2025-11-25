@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
+import 'package:quit_habit/screens/onboarding/questionnaire_two.dart';
 
 class QuestionnaireOneScreen extends StatefulWidget {
   const QuestionnaireOneScreen({super.key});
@@ -23,9 +24,15 @@ class _QuestionnaireOneScreenState extends State<QuestionnaireOneScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    
-    // Optional: Add navigation logic here after a short delay
-    // Future.delayed(const Duration(milliseconds: 300), () { ... });
+
+    // Navigate to Question 2 after a short delay to allow the selection animation
+    Future.delayed(const Duration(milliseconds: 10), () {
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const QuestionnaireTwoScreen()),
+      );
+    });
   }
 
   @override
