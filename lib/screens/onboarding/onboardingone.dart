@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/utils/app_colors.dart';
+import 'package:quit_habit/screens/onboarding/questionnaire_one.dart';
 
 class OnboardingOneScreen extends StatefulWidget {
   const OnboardingOneScreen({super.key});
@@ -245,8 +246,11 @@ class _OnboardingOneScreenState extends State<OnboardingOneScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: Navigate to next onboarding step
-                      },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const QuestionnaireOneScreen()),
+                          );
+                        },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.white,
