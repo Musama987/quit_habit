@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
+// Import the next screen
+import 'package:quit_habit/screens/onboarding/questionnaire_four.dart';
 
 class QuestionnaireThreeScreen extends StatefulWidget {
   const QuestionnaireThreeScreen({super.key});
@@ -169,7 +171,23 @@ class _QuestionnaireThreeScreenState extends State<QuestionnaireThreeScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            // TODO: Validate input and Navigate to Question 4
+                            // Check if input is empty before navigating
+                            if (_moneyController.text.trim().isNotEmpty) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const QuestionnaireFourScreen(),
+                                ),
+                              );
+                            } else {
+                              // Optional: Show a message if field is empty
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Please enter an amount to continue'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,

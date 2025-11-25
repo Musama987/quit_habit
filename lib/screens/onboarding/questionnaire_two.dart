@@ -25,7 +25,7 @@ class _QuestionnaireTwoScreenState extends State<QuestionnaireTwoScreen> {
     });
 
     // Add a small delay so the user sees the selection effect before moving on
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 10), () {
       if (mounted) {
         Navigator.push(
           context,
