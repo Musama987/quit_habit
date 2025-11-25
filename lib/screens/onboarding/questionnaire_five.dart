@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
-// TODO: Import your Home/Dashboard screen here
-// import 'package:quit_habit/screens/home/home_screen.dart';
+import 'package:quit_habit/screens/navbar/navbar.dart';
 
 class QuestionnaireFiveScreen extends StatefulWidget {
   const QuestionnaireFiveScreen({super.key});
@@ -32,20 +31,20 @@ class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
       if (!mounted) return;
 
       // Show a "Processing" indicator or navigate to Home
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Onboarding Complete! Creating your plan..."),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      // TODO: Navigate to Home Screen
-      // Navigator.pushAndRemoveUntil(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const HomeScreen()),
-      //   (route) => false,
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text("Onboarding Complete! Creating your plan..."),
+      //     backgroundColor: AppColors.success,
+      //     duration: Duration(seconds: 2),
+      //   ),
       // );
+
+      // Navigate to the main app (clear onboarding stack)
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => const MainNavBar()),
+        (route) => false,
+      );
     });
   }
 
