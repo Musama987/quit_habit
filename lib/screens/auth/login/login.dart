@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/screens/auth/register/register.dart';
+import 'package:quit_habit/screens/auth/login/forgetpassword.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 
@@ -221,7 +222,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     TextButton(
                       onPressed: () {
-                        // TODO: Navigate to Forgot Password screen
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ForgetPasswordScreen()),
+                        );
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
