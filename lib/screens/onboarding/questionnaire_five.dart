@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
-import 'package:quit_habit/screens/onboarding/questionnaire_five.dart';
+// TODO: Import your Home/Dashboard screen here
+// import 'package:quit_habit/screens/home/home_screen.dart';
 
-class QuestionnaireFourScreen extends StatefulWidget {
-  const QuestionnaireFourScreen({super.key});
+class QuestionnaireFiveScreen extends StatefulWidget {
+  const QuestionnaireFiveScreen({super.key});
 
   @override
-  State<QuestionnaireFourScreen> createState() =>
-      _QuestionnaireFourScreenState();
+  State<QuestionnaireFiveScreen> createState() =>
+      _QuestionnaireFiveScreenState();
 }
 
-class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
+class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
   // State to track the selected option
   int? _selectedIndex;
 
   final List<String> _options = [
-    'Improve my health',
-    'Save money',
-    'For my family',
-    'Better lifestyle',
+    'In the morning',
+    'During work breaks',
+    'Social situations',
+    'When stressed',
   ];
 
   void _handleOptionSelected(int index) {
@@ -26,14 +27,25 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
       _selectedIndex = index;
     });
 
-    // Navigate to the next screen after a short delay for visual feedback
-    Future.delayed(const Duration(milliseconds: 10), () {
+    // Logic to finish onboarding
+    Future.delayed(const Duration(milliseconds: 300), () {
       if (!mounted) return;
-      
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const QuestionnaireFiveScreen()),
+
+      // Show a "Processing" indicator or navigate to Home
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Onboarding Complete! Creating your plan..."),
+          backgroundColor: AppColors.success,
+          duration: Duration(seconds: 2),
+        ),
       );
+
+      // TODO: Navigate to Home Screen
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(builder: (_) => const HomeScreen()),
+      //   (route) => false,
+      // );
     });
   }
 
@@ -62,14 +74,14 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Question 4 of 5',
+                    'Question 5 of 5',
                     style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   Text(
-                    '80%',
+                    '100%',
                     style: textTheme.bodyMedium?.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -78,8 +90,8 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              
-              // Progress Bar (80%)
+
+              // Progress Bar (100%)
               Container(
                 height: 8,
                 width: double.infinity,
@@ -89,7 +101,7 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
                 ),
                 child: FractionallySizedBox(
                   alignment: Alignment.centerLeft,
-                  widthFactor: 0.8, // 80% Width
+                  widthFactor: 1.0, // 100% Width
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: AppColors.purpleGradient,
@@ -101,7 +113,7 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
 
               const SizedBox(height: 40),
 
-              // --- 2. Hero Icon (Shield) ---
+              // --- 2. Hero Icon (Clock) ---
               Container(
                 width: 100,
                 height: 100,
@@ -110,11 +122,11 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
                   shape: BoxShape.circle,
                   boxShadow: [AppColors.softShadow],
                 ),
-                child: Center(
+                child: const Center(
                   child: Icon(
-                    Icons.health_and_safety, 
+                    Icons.access_time,
                     size: 48,
-                    color: AppColors.error, // Using error red for the shield color as per image
+                    color: AppColors.textPrimary, 
                   ),
                 ),
               ),
@@ -123,7 +135,7 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
 
               // --- 3. Question Title ---
               Text(
-                'What motivates you to\nquit smoking?',
+                'When do you smoke the\nmost?',
                 style: textTheme.displayMedium?.copyWith(
                   fontSize: 24,
                   color: AppColors.textPrimary,
@@ -140,7 +152,8 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
                 child: ListView.separated(
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _options.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     final isSelected = _selectedIndex == index;
                     return _buildOptionCard(
@@ -197,12 +210,13 @@ class _QuestionnaireFourScreenState extends State<QuestionnaireFourScreen> {
               child: Text(
                 text,
                 style: textTheme.bodyLarge?.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color:
+                      isSelected ? AppColors.primary : AppColors.textSecondary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),
             ),
-            // Show checkmark if selected (Optional, but good UX)
+            // Show checkmark if selected
             if (isSelected)
               const Icon(
                 Icons.check_circle,
