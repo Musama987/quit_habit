@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/screens/auth/register/register.dart';
 import 'package:quit_habit/screens/auth/login/forgetpassword.dart';
+import 'package:quit_habit/screens/onboarding/onboardingone.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 
@@ -78,9 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // --- 2. Title and Subtitle ---
                 Text(
                   'Log in to your Account',
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
@@ -250,7 +248,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // TODO: Handle Login action
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const OnboardingOneScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
