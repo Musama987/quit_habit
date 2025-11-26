@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/relapse/relapse.dart';
@@ -47,7 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
 
             // 2. Distractions Section
-            _buildSectionHeader("Need a Distraction?", showViewAll: true),
+            _buildSectionHeader(
+              "Need a Distraction?", 
+              showViewAll: true,
+              onViewAllPressed: () {
+                // Navigate to ToolsScreen when clicked
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ToolsScreen()),
+                );
+              }
+            ),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -416,14 +427,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, {bool showViewAll = false}) {
+  // Updated to accept an optional VoidCallback for custom navigation
+  Widget _buildSectionHeader(String title, {bool showViewAll = false, VoidCallback? onViewAllPressed}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
         if (showViewAll)
           TextButton(
-            onPressed: () {},
+            onPressed: onViewAllPressed ?? () {}, // Use callback or empty function
             style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
             child: const Row(
               children: [

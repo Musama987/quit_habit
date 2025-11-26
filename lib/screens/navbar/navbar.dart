@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:quit_habit/screens/navbar/goals/goals.dart';
 import 'package:quit_habit/screens/navbar/home/home.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 class MainNavBar extends StatefulWidget {
@@ -23,8 +23,8 @@ class _MainNavBarState extends State<MainNavBar> {
   List<Widget> _buildScreens() {
     return [
       const HomeScreen(),
-      const GoalsScreen(),
-      const _PlaceholderScreen(title: 'Tools'),
+      const _PlaceholderScreen(title: 'Goals'),
+      const ToolsScreen(),
       const _PlaceholderScreen(title: 'Plan'),
       const _PlaceholderScreen(title: 'Profile'),
     ];
