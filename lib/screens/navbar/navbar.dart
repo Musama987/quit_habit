@@ -24,7 +24,6 @@ class _MainNavBarState extends State<MainNavBar> {
     return [
       const HomeScreen(),
       const GoalsScreen(),
-      const _PlaceholderScreen(title: 'Goals'),
       const _PlaceholderScreen(title: 'Tools'),
       const _PlaceholderScreen(title: 'Plan'),
       const _PlaceholderScreen(title: 'Profile'),
