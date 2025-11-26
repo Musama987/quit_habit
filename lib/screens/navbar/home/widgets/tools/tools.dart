@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -90,7 +91,9 @@ class ToolsScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 6), // Align slightly with the baseline of "12"
+              const SizedBox(
+                height: 6,
+              ), // Align slightly with the baseline of "12"
             ],
           ),
         ],
@@ -157,6 +160,17 @@ class ToolsScreen extends StatelessWidget {
           icon: tool['icon'],
           iconColor: tool['color'],
           bgColor: tool['bg'],
+          // Pass a callback to handle navigation specifically for Breathing
+          onTap: () {
+            if (tool['title'] == 'Breathing') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BreathingScreen()),
+              );
+            } else {
+              // Placeholder for other tools
+            }
+          },
         );
       },
     );
@@ -169,22 +183,18 @@ class ToolsScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required Color bgColor,
+    VoidCallback? onTap, // Add this parameter
   }) {
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: iconColor.withOpacity(0.1),
-          width: 1,
-        ),
+        border: Border.all(color: iconColor.withOpacity(0.1), width: 1),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            // Handle tool tap
-          },
+          onTap: onTap, // Use it here
           borderRadius: BorderRadius.circular(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -194,18 +204,18 @@ class ToolsScreen extends StatelessWidget {
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),

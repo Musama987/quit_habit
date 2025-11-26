@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
@@ -62,7 +63,21 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: _buildDistractionCard(Icons.air, "Breathing", const Color(0xFFFFE2E2), const Color(0xFFEF4444))),
+                // Connected the Breathing Card to navigation
+                Expanded(
+                  child: _buildDistractionCard(
+                    Icons.air, 
+                    "Breathing", 
+                    const Color(0xFFFFE2E2), 
+                    const Color(0xFFEF4444),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const BreathingScreen()),
+                      );
+                    },
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(child: _buildDistractionCard(Icons.show_chart, "Exercise", const Color(0xFFE0F2FE), const Color(0xFF3B82F6))),
                 const SizedBox(width: 12),
@@ -223,24 +238,28 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDistractionCard(IconData icon, String label, Color bg, Color iconColor) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), shape: BoxShape.circle),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
-        ],
+  // Updated to include onTap for navigation
+  Widget _buildDistractionCard(IconData icon, String label, Color bg, Color iconColor, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap, // Trigger navigation if provided
+      child: Container(
+        height: 100,
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), shape: BoxShape.circle),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(height: 8),
+            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+          ],
+        ),
       ),
     );
   }

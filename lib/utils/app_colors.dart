@@ -7,7 +7,8 @@ class AppColors {
   // -- Brand Colors --
   static const Color primary = Color(0xFF3B82F6); // Bright Royal Blue (Main Actions)
   static const Color primaryDark = Color(0xFF2563EB);
-  static const Color primaryLight = Color(0xFFEFF6FF); // Very light blue for backgrounds
+  static const Color primaryLight = Color(0xFFEFF6FF); 
+   static const Color primarymedium = Color.fromARGB(255, 197, 222, 255);// Very light blue for backgrounds
 
   // -- Accent Colors --
   static const Color purple = Color(0xFF8B5CF6); // Onboarding progress bars
