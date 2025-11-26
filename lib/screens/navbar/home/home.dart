@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/utils/app_colors.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/relapse/relapse.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -170,7 +171,12 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CalendarScreen()),
+                    );
+                  },
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white,
                     side: const BorderSide(color: AppColors.primary),
