@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 class ToolsScreen extends StatelessWidget {
@@ -37,7 +38,7 @@ class ToolsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.purpleLight), // Light purple border
+        border: Border.all(color: AppColors.purpleLight),
         boxShadow: [
           BoxShadow(
             color: AppColors.purple.withOpacity(0.05),
@@ -87,13 +88,11 @@ class ToolsScreen extends StatelessWidget {
               Text(
                 "Breathing",
                 style: textTheme.titleMedium?.copyWith(
-                  color: AppColors.purple, // Using purple accent
+                  color: AppColors.purple, 
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(
-                height: 6,
-              ), // Align slightly with the baseline of "12"
+              const SizedBox(height: 6), 
             ],
           ),
         ],
@@ -102,42 +101,41 @@ class ToolsScreen extends StatelessWidget {
   }
 
   Widget _buildToolsGrid(BuildContext context) {
-    // Defining tool data locally to keep it clean
     final List<Map<String, dynamic>> tools = [
       {
         'title': 'Breathing',
         'subtitle': 'Calm cravings',
         'icon': Icons.air,
         'color': Colors.cyan,
-        'bg': const Color(0xFFE0F7FA), // Light Cyan
+        'bg': const Color(0xFFE0F7FA),
       },
       {
         'title': 'Physical Workout',
         'subtitle': 'Quick workouts',
         'icon': Icons.fitness_center,
         'color': Colors.deepOrange,
-        'bg': const Color(0xFFFFF7ED), // Light Orange
+        'bg': const Color(0xFFFFF7ED),
       },
       {
         'title': 'Meditation',
         'subtitle': 'Find peace',
-        'icon': Icons.psychology, // Brain icon
+        'icon': Icons.psychology,
         'color': AppColors.purple,
         'bg': AppColors.purpleLight,
       },
       {
         'title': 'Word Puzzle',
         'subtitle': 'Distract mind',
-        'icon': Icons.calculate_outlined, // Calculator/Grid look
+        'icon': Icons.calculate_outlined,
         'color': AppColors.success,
         'bg': AppColors.successLight,
       },
       {
         'title': 'Inspiration',
         'subtitle': 'Daily quotes',
-        'icon': Icons.auto_awesome, // Sparkles
-        'color': const Color(0xFFD97706), // Darker Gold
-        'bg': const Color(0xFFFEFCE8), // Light Yellow
+        'icon': Icons.auto_awesome,
+        'color': const Color(0xFFD97706),
+        'bg': const Color(0xFFFEFCE8),
       },
     ];
 
@@ -149,7 +147,7 @@ class ToolsScreen extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: 1.4, // Rectangular aspect ratio
+        childAspectRatio: 1.4,
       ),
       itemBuilder: (context, index) {
         final tool = tools[index];
@@ -160,15 +158,19 @@ class ToolsScreen extends StatelessWidget {
           icon: tool['icon'],
           iconColor: tool['color'],
           bgColor: tool['bg'],
-          // Pass a callback to handle navigation specifically for Breathing
           onTap: () {
             if (tool['title'] == 'Breathing') {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const BreathingScreen()),
               );
-            } else {
-              // Placeholder for other tools
+            } 
+            // 2. Add Navigation Logic
+            else if (tool['title'] == 'Physical Workout') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MovementScreen()),
+              );
             }
           },
         );
@@ -183,7 +185,7 @@ class ToolsScreen extends StatelessWidget {
     required IconData icon,
     required Color iconColor,
     required Color bgColor,
-    VoidCallback? onTap, // Add this parameter
+    VoidCallback? onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -194,7 +196,7 @@ class ToolsScreen extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap, // Use it here
+          onTap: onTap,
           borderRadius: BorderRadius.circular(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

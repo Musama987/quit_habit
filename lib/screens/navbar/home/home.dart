@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
@@ -63,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 12),
             Row(
               children: [
-                // Connected the Breathing Card to navigation
+                // Breathing Card
                 Expanded(
                   child: _buildDistractionCard(
                     Icons.air, 
@@ -79,9 +80,34 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: _buildDistractionCard(Icons.show_chart, "Exercise", const Color(0xFFE0F2FE), const Color(0xFF3B82F6))),
+                
+                // Exercise Card - Connected to MovementScreen
+                Expanded(
+                  child: _buildDistractionCard(
+                    Icons.show_chart, 
+                    "Exercise", 
+                    const Color(0xFFE0F2FE), 
+                    const Color(0xFF3B82F6),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MovementScreen()),
+                      );
+                    },
+                  ),
+                ),
+                
                 const SizedBox(width: 12),
-                Expanded(child: _buildDistractionCard(Icons.self_improvement, "Meditate", const Color(0xFFDCFCE7), const Color(0xFF10B981))),
+                
+                // Meditate Card (Placeholder for now)
+                Expanded(
+                  child: _buildDistractionCard(
+                    Icons.self_improvement, 
+                    "Meditate", 
+                    const Color(0xFFDCFCE7), 
+                    const Color(0xFF10B981)
+                  ),
+                ),
               ],
             ),
 
