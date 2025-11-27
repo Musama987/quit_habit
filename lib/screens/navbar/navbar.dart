@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/challanges/challanges.dart';
+import 'package:quit_habit/screens/navbar/community/community.dart';
 import 'package:quit_habit/screens/navbar/home/home.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
@@ -24,7 +25,7 @@ class _MainNavBarState extends State<MainNavBar> {
     return [
       const HomeScreen(),
       const ChallengesScreen(),
-      const _PlaceholderScreen(title: 'Community'),
+      const CommunityScreen(),
       const _PlaceholderScreen(title: 'Plan'),
       const _PlaceholderScreen(title: 'Profile'),
     ];
