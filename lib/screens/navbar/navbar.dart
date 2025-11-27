@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/home/home.dart';
-import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
+// import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 class MainNavBar extends StatefulWidget {
@@ -23,7 +23,7 @@ class _MainNavBarState extends State<MainNavBar> {
   List<Widget> _buildScreens() {
     return [
       const HomeScreen(),
-      const _PlaceholderScreen(title: 'Goals'),
+      const _PlaceholderScreen(title: 'challanges'),
       const _PlaceholderScreen(title: 'Community'),
       const _PlaceholderScreen(title: 'Plan'),
       const _PlaceholderScreen(title: 'Profile'),
@@ -33,8 +33,8 @@ class _MainNavBarState extends State<MainNavBar> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       _buildNavItem(Icons.home, Icons.home_outlined, "Home"),
-      _buildNavItem(Icons.track_changes, Icons.track_changes_outlined, "Goals"),
-      _buildNavItem(Icons.auto_awesome, Icons.people, "Community"),
+      _buildNavItem(Icons.track_changes, Icons.track_changes_outlined, "Challanges"),
+      _buildNavItem(Icons.people, Icons.people, "Community"),
       _buildNavItem(Icons.calendar_month, Icons.calendar_today_outlined, "Plan"),
       _buildNavItem(Icons.person, Icons.person_outline, "Profile"),
     ];

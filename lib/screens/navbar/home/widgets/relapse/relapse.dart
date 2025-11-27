@@ -24,7 +24,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
     {'icon': '❓', 'label': 'Other reason', 'isCustom': true},
   ];
 
-  // Helper to format date simply without external package
+  // Helper to format date
   String _formatDate(DateTime date) {
     const List<String> months = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -42,7 +42,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
+            colorScheme: const ColorScheme.light(
               primary: AppColors.primary,
               onPrimary: Colors.white,
               onSurface: AppColors.textPrimary,
@@ -66,21 +66,25 @@ class _RelapseScreenState extends State<RelapseScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: SafeArea(
-        child: Column(
-          children: [
-            // --- Header Section ---
-            _buildHeader(context, textTheme),
+        // Wrap EVERYTHING in SingleChildScrollView to make the whole screen scroll
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- 1. Header (Scrolls with body) ---
+              _buildHeader(context, textTheme),
 
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20.0),
+              // --- 2. Main Content ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // --- Date Selector ---
                     _buildDateSelector(textTheme),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // --- Trigger Selection ---
                     Text(
@@ -88,25 +92,28 @@ class _RelapseScreenState extends State<RelapseScreen> {
                       style: textTheme.bodyLarge?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
+                        fontSize: 15,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildTriggerGrid(),
+                    const SizedBox(height: 10),
+                    _buildTriggerGrid(context),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // --- Coin Penalty Card ---
                     _buildCoinPenaltyCard(textTheme),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 24), // Spacing before buttons
+
+                    // --- 3. Bottom Buttons (Scrolls with body) ---
+                    _buildBottomButtons(context),
+                    
+                    const SizedBox(height: 20), // Bottom padding
                   ],
                 ),
               ),
-            ),
-
-            // --- Bottom Buttons ---
-            _buildBottomButtons(context),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -114,11 +121,11 @@ class _RelapseScreenState extends State<RelapseScreen> {
 
   Widget _buildHeader(BuildContext context, TextTheme textTheme) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight.withOpacity(0.5),
-        border: const Border(
-          bottom: BorderSide(color: AppColors.border),
+        color: AppColors.backgroundLight,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.withOpacity(0.2)),
         ),
       ),
       child: Row(
@@ -126,8 +133,8 @@ class _RelapseScreenState extends State<RelapseScreen> {
         children: [
           const Icon(
             Icons.error_outline,
-            color: AppColors.error, // Using existing error red
-            size: 28,
+            color: AppColors.error,
+            size: 26,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -139,6 +146,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
+                    fontSize: 18,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -147,6 +155,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
                   style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                     fontSize: 13,
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -162,7 +171,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
               ),
               child: const Icon(
                 Icons.close,
-                size: 20,
+                size: 18,
                 color: AppColors.textSecondary,
               ),
             ),
@@ -176,12 +185,11 @@ class _RelapseScreenState extends State<RelapseScreen> {
     return GestureDetector(
       onTap: _pickDate,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: AppColors.surfaceLight,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
-          boxShadow: [AppColors.softShadow],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -201,7 +209,8 @@ class _RelapseScreenState extends State<RelapseScreen> {
                   _formatDate(_selectedDate),
                   style: textTheme.titleMedium?.copyWith(
                     color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ],
@@ -209,12 +218,12 @@ class _RelapseScreenState extends State<RelapseScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.errorLight,
+                color: const Color(0xFFF3E8FF),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
-                Icons.calendar_today_outlined,
-                color: AppColors.textSecondary,
+                Icons.calendar_today,
+                color: Color(0xFF6B7280),
                 size: 20,
               ),
             ),
@@ -224,15 +233,15 @@ class _RelapseScreenState extends State<RelapseScreen> {
     );
   }
 
-  Widget _buildTriggerGrid() {
+  Widget _buildTriggerGrid(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(), // Disable grid's own scrolling
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.6, // Adjust for card shape
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 2.2, // Short height for compactness
       ),
       itemCount: _triggers.length,
       itemBuilder: (context, index) {
@@ -248,18 +257,19 @@ class _RelapseScreenState extends State<RelapseScreen> {
           },
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               color: AppColors.surfaceLight,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? AppColors.primary : Colors.grey.shade200,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
                         color: AppColors.primary.withOpacity(0.1),
-                        blurRadius: 8,
+                        blurRadius: 4,
                         offset: const Offset(0, 2),
                       )
                     ]
@@ -272,23 +282,25 @@ class _RelapseScreenState extends State<RelapseScreen> {
                     ? Text(
                         trigger['icon'],
                         style: const TextStyle(
-                          fontSize: 24,
-                          color: AppColors.error, // Red Question mark
+                          fontSize: 20,
+                          color: AppColors.error,
                           fontWeight: FontWeight.bold,
                         ),
                       )
                     : Text(
                         trigger['icon'],
-                        style: const TextStyle(fontSize: 24),
+                        style: const TextStyle(fontSize: 20),
                       ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   trigger['label'],
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.w500,
-                        fontSize: 13,
+                        fontSize: 12,
                       ),
                 ),
               ],
@@ -300,10 +312,9 @@ class _RelapseScreenState extends State<RelapseScreen> {
   }
 
   Widget _buildCoinPenaltyCard(TextTheme textTheme) {
-    // Using a custom light orange color for the penalty card background
-    // mimicking the design in the image
-    const Color penaltyBg = Color(0xFFFFF7ED); 
+    const Color penaltyBg = Color(0xFFFFF7ED);
     const Color penaltyBorder = Color(0xFFFFEDD5);
+    const Color iconOrange = Color(0xFFFF9800);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -313,17 +324,18 @@ class _RelapseScreenState extends State<RelapseScreen> {
         border: Border.all(color: penaltyBorder),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
-                  color: Colors.orange,
+                  color: iconOrange,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons.access_time_filled, // Using similar clock/coin icon
+                  Icons.access_time_filled,
                   color: Colors.white,
                   size: 20,
                 ),
@@ -338,6 +350,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
                       style: textTheme.titleMedium?.copyWith(
                         color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
                     ),
                     Text(
@@ -352,7 +365,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
               ),
               Switch.adaptive(
                 value: _coinPenaltyEnabled,
-                activeColor: Colors.deepOrange,
+                activeColor: iconOrange,
                 onChanged: (value) {
                   setState(() {
                     _coinPenaltyEnabled = value;
@@ -362,23 +375,24 @@ class _RelapseScreenState extends State<RelapseScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(color: penaltyBorder),
-          const SizedBox(height: 8),
+          const Divider(color: penaltyBorder, height: 1),
+          const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Icon(
                 Icons.info_outline,
                 size: 16,
-                color: Colors.deepOrange,
+                color: iconOrange,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   "This helps you stay accountable to your recovery journey",
                   style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
+                    color: const Color(0xFF4B5563),
+                    fontSize: 11,
+                    height: 1.3,
                   ),
                 ),
               ),
@@ -390,49 +404,41 @@ class _RelapseScreenState extends State<RelapseScreen> {
   }
 
   Widget _buildBottomButtons(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceLight,
-        border: Border(top: BorderSide(color: AppColors.border)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                side: const BorderSide(color: AppColors.border),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.textPrimary,
+              side: const BorderSide(color: Colors.grey),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text("Cancel"),
             ),
+            child: const Text("Cancel"),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () {
-                // Handle Confirm Logic Here
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text("Confirm"),
+              elevation: 0,
             ),
+            child: const Text("Confirm"),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
