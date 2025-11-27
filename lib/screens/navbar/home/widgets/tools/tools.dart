@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/inspiration/inspiration.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/meditation/meditation.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
 import 'package:quit_habit/utils/app_colors.dart';
@@ -183,6 +184,14 @@ class ToolsScreen extends StatelessWidget {
                 context,
                 screen:
                     const MeditationScreen(), // Ensure you import the new file
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.sizeUp,
+              );
+            } else if (tool['title'] == 'Inspiration') {
+              // --- ADDED NAVIGATION HERE ---
+              PersistentNavBarNavigator.pushNewScreen(
+                context,
+                screen: const InspirationScreen(),
                 withNavBar: false,
                 pageTransitionAnimation: PageTransitionAnimation.sizeUp,
               );
