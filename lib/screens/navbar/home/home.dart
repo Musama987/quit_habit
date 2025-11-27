@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/meditation/meditation.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
 import 'package:quit_habit/utils/app_colors.dart';
@@ -112,7 +113,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     Icons.self_improvement, 
                     "Meditate", 
                     const Color(0xFFDCFCE7), 
-                    const Color(0xFF10B981)
+                    const Color(0xFF10B981),
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: const MeditationScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
+                      );
+                    },
                   ),
                 ),
               ],
