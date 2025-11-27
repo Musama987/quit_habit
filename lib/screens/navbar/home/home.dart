@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
@@ -55,10 +56,12 @@ class _HomeScreenState extends State<HomeScreen> {
               showViewAll: true,
               onViewAllPressed: () {
                 // Navigate to ToolsScreen when clicked
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ToolsScreen()),
-                );
+               PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: const ToolsScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                      );
               }
             ),
             const SizedBox(height: 12),
@@ -72,9 +75,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Color(0xFFFFE2E2), 
                     const Color(0xFFEF4444),
                     onTap: () {
-                      Navigator.push(
+                      PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        MaterialPageRoute(builder: (_) => const BreathingScreen()),
+                        screen: const BreathingScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
                       );
                     },
                   ),
@@ -89,9 +94,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Color(0xFFE0F2FE), 
                     const Color(0xFF3B82F6),
                     onTap: () {
-                      Navigator.push(
+                      PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        MaterialPageRoute(builder: (_) => const MovementScreen()),
+                        screen: const MovementScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
                       );
                     },
                   ),
@@ -291,7 +298,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildDayBubble(String day, bool isChecked, Color color) {
-    bool isPending = !isChecked && color != Colors.grey; // Logic for the checkmark/cross
     bool isEmpty = color == Colors.grey;
 
     return Column(

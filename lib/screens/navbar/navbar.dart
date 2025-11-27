@@ -24,7 +24,7 @@ class _MainNavBarState extends State<MainNavBar> {
     return [
       const HomeScreen(),
       const _PlaceholderScreen(title: 'Goals'),
-      const ToolsScreen(),
+      const _PlaceholderScreen(title: 'Community'),
       const _PlaceholderScreen(title: 'Plan'),
       const _PlaceholderScreen(title: 'Profile'),
     ];
@@ -34,7 +34,7 @@ class _MainNavBarState extends State<MainNavBar> {
     return [
       _buildNavItem(Icons.home, Icons.home_outlined, "Home"),
       _buildNavItem(Icons.track_changes, Icons.track_changes_outlined, "Goals"),
-      _buildNavItem(Icons.auto_awesome, Icons.auto_awesome_outlined, "Tools"),
+      _buildNavItem(Icons.auto_awesome, Icons.people, "Community"),
       _buildNavItem(Icons.calendar_month, Icons.calendar_today_outlined, "Plan"),
       _buildNavItem(Icons.person, Icons.person_outline, "Profile"),
     ];
