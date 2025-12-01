@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/challanges/challanges.dart';
 import 'package:quit_habit/screens/navbar/community/community.dart';
 import 'package:quit_habit/screens/navbar/home/home.dart';
+import 'package:quit_habit/screens/navbar/plan/plan.dart';
 import 'package:quit_habit/screens/navbar/profile/profile.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
@@ -27,7 +28,7 @@ class _MainNavBarState extends State<MainNavBar> {
       const HomeScreen(),
       const ChallengesScreen(),
       const CommunityScreen(),
-      const _PlaceholderScreen(title: 'Plan'),
+      const PlanScreen(),
       const ProfileScreen(),
     ];
   }
