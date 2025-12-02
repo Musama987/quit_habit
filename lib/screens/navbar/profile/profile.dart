@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
+import 'package:quit_habit/services/auth_service.dart';
+import 'package:quit_habit/screens/auth/login/login.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -76,8 +79,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 color: AppColors.primary,
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Icon(Icons.person,
-                                  color: Colors.white, size: avatarSize * 0.55),
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: avatarSize * 0.55,
+                              ),
                             ),
                             Positioned(
                               bottom: -2,
@@ -91,11 +97,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
                                       blurRadius: 4,
-                                    )
+                                    ),
                                   ],
                                 ),
-                                child: const Icon(Icons.edit,
-                                    size: 14, color: AppColors.textSecondary),
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 14,
+                                  color: AppColors.textSecondary,
+                                ),
                               ),
                             ),
                           ],
@@ -106,7 +115,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Sarah Johnson",
+                                AuthService().currentUser?.displayName ??
+                                    AuthService().currentUser?.email?.split(
+                                      '@',
+                                    )[0] ??
+                                    "User",
                                 style: textTheme.titleLarge?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   fontSize: isSmallScreen ? 18 : 20,
@@ -118,7 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFF3F4F6),
                                       borderRadius: BorderRadius.circular(8),
@@ -136,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                "Member since Oct 2025",
+                                "Member since ${_formatDate(AuthService().currentUser?.metadata.creationTime)}",
                                 style: textTheme.bodySmall?.copyWith(
                                   color: AppColors.textTertiary,
                                   fontSize: 11,
@@ -154,11 +169,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatItem(context, "7", "Day Streak", isSmallScreen),
+                        _buildStatItem(
+                          context,
+                          "7",
+                          "Day Streak",
+                          isSmallScreen,
+                        ),
                         _buildVerticalDivider(isSmallScreen),
                         _buildStatItem(context, "2", "Badges", isSmallScreen),
                         _buildVerticalDivider(isSmallScreen),
-                        _buildStatItem(context, "100%", "Success", isSmallScreen),
+                        _buildStatItem(
+                          context,
+                          "100%",
+                          "Success",
+                          isSmallScreen,
+                        ),
                       ],
                     ),
 
@@ -192,8 +217,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.workspace_premium,
-                                color: Colors.white, size: 20),
+                            Icon(
+                              Icons.workspace_premium,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             SizedBox(width: 8),
                             Text(
                               "Upgrade to Pro",
@@ -216,13 +244,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // --- 2. Quick Actions Row (Selector) ---
               Row(
                 children: [
-                  _buildQuickAction(context, Icons.shield_outlined, "Badges", 0),
+                  _buildQuickAction(
+                    context,
+                    Icons.shield_outlined,
+                    "Badges",
+                    0,
+                  ),
                   const SizedBox(width: 10),
-                  _buildQuickAction(context, Icons.bar_chart_rounded, "Stats", 1),
+                  _buildQuickAction(
+                    context,
+                    Icons.bar_chart_rounded,
+                    "Stats",
+                    1,
+                  ),
                   const SizedBox(width: 10),
-                  _buildQuickAction(context, Icons.menu_book_outlined, "Learn", 2),
+                  _buildQuickAction(
+                    context,
+                    Icons.menu_book_outlined,
+                    "Learn",
+                    2,
+                  ),
                   const SizedBox(width: 10),
-                  _buildQuickAction(context, Icons.settings_outlined, "Settings", 3),
+                  _buildQuickAction(
+                    context,
+                    Icons.settings_outlined,
+                    "Settings",
+                    3,
+                  ),
                 ],
               ),
 
@@ -244,7 +292,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // --- View Switching Logic ---
-  Widget _buildSelectedView(BuildContext context, TextTheme textTheme, bool isSmall) {
+  Widget _buildSelectedView(
+    BuildContext context,
+    TextTheme textTheme,
+    bool isSmall,
+  ) {
     switch (_selectedIndex) {
       case 0:
         return _buildBadgesView(textTheme);
@@ -293,12 +345,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSpacing: 12,
           childAspectRatio: 0.85,
           children: [
-            _buildBadgeCard("First Week", "Oct 13", Icons.track_changes, true, Colors.redAccent, const Color(0xFFFEF2F2)),
-            _buildBadgeCard("Money Saver", "Oct 15", Icons.savings, true, Colors.amber, const Color(0xFFFFFBEB)),
-            _buildBadgeCard("Health Hero", "Locked", Icons.favorite, false, Colors.pinkAccent, const Color(0xFFFDF2F8)),
-            _buildBadgeCard("One Month", "Locked", Icons.emoji_events, false, Colors.orange, const Color(0xFFFFF7ED)),
-            _buildBadgeCard("Team Player", "Locked", Icons.groups, false, Colors.blue, const Color(0xFFEFF6FF)),
-            _buildBadgeCard("Champion", "Locked", Icons.military_tech, false, Colors.purple, const Color(0xFFFAF5FF)),
+            _buildBadgeCard(
+              "First Week",
+              "Oct 13",
+              Icons.track_changes,
+              true,
+              Colors.redAccent,
+              const Color(0xFFFEF2F2),
+            ),
+            _buildBadgeCard(
+              "Money Saver",
+              "Oct 15",
+              Icons.savings,
+              true,
+              Colors.amber,
+              const Color(0xFFFFFBEB),
+            ),
+            _buildBadgeCard(
+              "Health Hero",
+              "Locked",
+              Icons.favorite,
+              false,
+              Colors.pinkAccent,
+              const Color(0xFFFDF2F8),
+            ),
+            _buildBadgeCard(
+              "One Month",
+              "Locked",
+              Icons.emoji_events,
+              false,
+              Colors.orange,
+              const Color(0xFFFFF7ED),
+            ),
+            _buildBadgeCard(
+              "Team Player",
+              "Locked",
+              Icons.groups,
+              false,
+              Colors.blue,
+              const Color(0xFFEFF6FF),
+            ),
+            _buildBadgeCard(
+              "Champion",
+              "Locked",
+              Icons.military_tech,
+              false,
+              Colors.purple,
+              const Color(0xFFFAF5FF),
+            ),
           ],
         ),
       ],
@@ -322,17 +416,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildStatCard(Icons.local_fire_department, "7", "Total Days", const Color(0xFFDCFCE7), Colors.green)),
+            Expanded(
+              child: _buildStatCard(
+                Icons.local_fire_department,
+                "7",
+                "Total Days",
+                const Color(0xFFDCFCE7),
+                Colors.green,
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildStatCard(Icons.emoji_events, "2", "Challenges", const Color(0xFFF3E8FF), AppColors.purple)),
+            Expanded(
+              child: _buildStatCard(
+                Icons.emoji_events,
+                "2",
+                "Challenges",
+                const Color(0xFFF3E8FF),
+                AppColors.purple,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _buildStatCard(Icons.savings, "\$36", "Money Saved", const Color(0xFFE0F2FE), AppColors.primary)),
+            Expanded(
+              child: _buildStatCard(
+                Icons.savings,
+                "\$36",
+                "Money Saved",
+                const Color(0xFFE0F2FE),
+                AppColors.primary,
+              ),
+            ),
             const SizedBox(width: 12),
-            Expanded(child: _buildStatCard(Icons.check_circle, "100%", "Success Rate", const Color(0xFFFCE7F3), Colors.pink)),
+            Expanded(
+              child: _buildStatCard(
+                Icons.check_circle,
+                "100%",
+                "Success Rate",
+                const Color(0xFFFCE7F3),
+                Colors.pink,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -348,30 +474,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("7-Day Progress", style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary, fontSize: 14)),
+              const Text(
+                "7-Day Progress",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                  fontSize: 14,
+                ),
+              ),
               const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(7, (index) => Container(
-                  width: 24,
-                  height: 50.0 + (index * 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
-                    borderRadius: BorderRadius.circular(6),
+                children: List.generate(
+                  7,
+                  (index) => Container(
+                    width: 24,
+                    height: 50.0 + (index * 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                   ),
-                )),
+                ),
               ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: ["M", "T", "W", "T", "F", "S", "S"].map((day) => 
-                  SizedBox(width: 24, child: Center(child: Text(day, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary))))
-                ).toList(),
-              )
+                children: ["M", "T", "W", "T", "F", "S", "S"]
+                    .map(
+                      (day) => SizedBox(
+                        width: 24,
+                        child: Center(
+                          child: Text(
+                            day,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -392,45 +541,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 16),
         _ExpandableLearnItem(
-          title: "Why is smoking harmful?", 
-          icon: Icons.smoke_free, 
+          title: "Why is smoking harmful?",
+          icon: Icons.smoke_free,
           color: Colors.grey,
-          description: "Smoking damages your lungs, heart, and blood vessels. It increases the risk of stroke, heart disease, and lung cancer.",
+          description:
+              "Smoking damages your lungs, heart, and blood vessels. It increases the risk of stroke, heart disease, and lung cancer.",
         ),
         const SizedBox(height: 12),
         _ExpandableLearnItem(
-          title: "Health benefits of quitting", 
-          icon: Icons.favorite, 
+          title: "Health benefits of quitting",
+          icon: Icons.favorite,
           color: Colors.redAccent,
-          description: "Within 20 minutes, your heart rate drops. Within 12 hours, carbon monoxide levels return to normal. Lung function improves within weeks.",
+          description:
+              "Within 20 minutes, your heart rate drops. Within 12 hours, carbon monoxide levels return to normal. Lung function improves within weeks.",
         ),
         const SizedBox(height: 12),
         _ExpandableLearnItem(
-          title: "Understanding nicotine addiction", 
-          icon: Icons.psychology, 
+          title: "Understanding nicotine addiction",
+          icon: Icons.psychology,
           color: Colors.pink,
-          description: "Nicotine triggers dopamine release, creating a cycle of craving and relief. Breaking this cycle takes time and patience.",
+          description:
+              "Nicotine triggers dopamine release, creating a cycle of craving and relief. Breaking this cycle takes time and patience.",
         ),
         const SizedBox(height: 12),
         _ExpandableLearnItem(
-          title: "Tips for handling cravings", 
-          icon: Icons.fitness_center, 
+          title: "Tips for handling cravings",
+          icon: Icons.fitness_center,
           color: Colors.orange,
-          description: "Drink water, practice deep breathing, go for a walk, or use the 4Ds: Delay, Deep breathe, Drink water, Do something else.",
+          description:
+              "Drink water, practice deep breathing, go for a walk, or use the 4Ds: Delay, Deep breathe, Drink water, Do something else.",
         ),
         const SizedBox(height: 12),
         _ExpandableLearnItem(
-          title: "Success stories", 
-          icon: Icons.star, 
+          title: "Success stories",
+          icon: Icons.star,
           color: Colors.amber,
-          description: "Read about how others overcame their addiction and improved their lives through persistence and support.",
+          description:
+              "Read about how others overcame their addiction and improved their lives through persistence and support.",
         ),
       ],
     );
   }
 
   // --- D. Settings View ---
-  Widget _buildSettingsView(BuildContext context, TextTheme textTheme, bool isSmall) {
+  Widget _buildSettingsView(
+    BuildContext context,
+    TextTheme textTheme,
+    bool isSmall,
+  ) {
     return Column(
       key: const ValueKey(3),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,7 +656,96 @@ class _ProfileScreenState extends State<ProfileScreen> {
           width: double.infinity,
           height: 52,
           child: TextButton.icon(
-            onPressed: () { },
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: Colors.white,
+                  surfaceTintColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  title: const Text(
+                    "Sign Out",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  content: const Text(
+                    "Are you sure you want to sign out?",
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  actionsAlignment: MainAxisAlignment.center,
+                  actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  actions: [
+                    // Cancel Button
+                    OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.border),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Sign Out Button
+                    OutlinedButton(
+                      onPressed: () async {
+                        Navigator.pop(context); // Close dialog
+                        await AuthService().signOut();
+                        if (context.mounted) {
+                          Navigator.of(
+                            context,
+                            rootNavigator: true,
+                          ).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        }
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColors.error),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      child: const Text(
+                        "Sign Out",
+                        style: TextStyle(
+                          color: AppColors.error,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
             icon: const Icon(Icons.logout, color: AppColors.error, size: 20),
             label: const Text(
               "Sign Out",
@@ -523,23 +770,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // --- Helper Widgets ---
 
-  Widget _buildStatItem(BuildContext context, String value, String label, bool isSmall) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String value,
+    String label,
+    bool isSmall,
+  ) {
     return Column(
       children: [
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-                fontSize: isSmall ? 18 : 22,
-              ),
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+            fontSize: isSmall ? 18 : 22,
+          ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 12,
-              ),
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -553,9 +805,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildQuickAction(BuildContext context, IconData icon, String label, int index) {
+  Widget _buildQuickAction(
+    BuildContext context,
+    IconData icon,
+    String label,
+    int index,
+  ) {
     final bool isSelected = _selectedIndex == index;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () {
@@ -565,16 +822,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 14), 
+          padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: isSelected ? AppColors.primary : Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                        color: AppColors.primary.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5))
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
                   ]
                 : [AppColors.softShadow],
           ),
@@ -604,7 +862,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSettingTile(BuildContext context, {
+  Widget _buildSettingTile(
+    BuildContext context, {
     required IconData icon,
     required Color iconBg,
     required Color iconColor,
@@ -622,7 +881,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.black.withOpacity(0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
-          )
+          ),
         ],
       ),
       child: Row(
@@ -643,36 +902,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                        fontSize: 15,
-                      ),
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                    fontSize: 15,
+                  ),
                 ),
                 Text(
                   subtitle,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontSize: 12,
-                      ),
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
+          const Icon(
+            Icons.chevron_right,
+            color: AppColors.textTertiary,
+            size: 20,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildBadgeCard(String title, String date, IconData icon, bool unlocked, Color color, Color bg) {
+  Widget _buildBadgeCard(
+    String title,
+    String date,
+    IconData icon,
+    bool unlocked,
+    Color color,
+    Color bg,
+  ) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [AppColors.softShadow],
-        border: unlocked ? Border.all(color: color.withOpacity(0.3), width: 1) : null,
+        border: unlocked
+            ? Border.all(color: color.withOpacity(0.3), width: 1)
+            : null,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -683,18 +955,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: unlocked ? bg : Colors.grey[100],
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: unlocked ? color : Colors.grey[400], size: 22),
+            child: Icon(
+              icon,
+              color: unlocked ? color : Colors.grey[400],
+              size: 22,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(title, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: unlocked ? AppColors.textPrimary : AppColors.textTertiary)),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: unlocked ? AppColors.textPrimary : AppColors.textTertiary,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(date, style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+          Text(
+            date,
+            style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildStatCard(IconData icon, String value, String label, Color bg, Color iconColor) {
+  Widget _buildStatCard(
+    IconData icon,
+    String value,
+    String label,
+    Color bg,
+    Color iconColor,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
@@ -707,15 +999,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(10),
+            ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return "2025";
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return "${months[date.month - 1]} ${date.year}";
   }
 }
 
@@ -768,13 +1095,15 @@ class _ExpandableLearnItemState extends State<_ExpandableLearnItem> {
                     widget.title,
                     style: const TextStyle(
                       fontSize: 15,
-                      fontWeight: FontWeight.w600, 
+                      fontWeight: FontWeight.w600,
                       color: AppColors.textPrimary,
                     ),
                   ),
                 ),
                 Icon(
-                  _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                  _isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
                   size: 22,
                   color: AppColors.textTertiary,
                 ),
