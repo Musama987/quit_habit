@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/screens/navbar/navbar.dart';
+import 'package:quit_habit/services/onboarding_service.dart';
 
 class QuestionnaireFiveScreen extends StatefulWidget {
   const QuestionnaireFiveScreen({super.key});
@@ -27,17 +28,12 @@ class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
     });
 
     // Logic to finish onboarding
-    Future.delayed(const Duration(milliseconds: 300), () {
+    Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
 
-      // Show a "Processing" indicator or navigate to Home
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(
-      //     content: Text("Onboarding Complete! Creating your plan..."),
-      //     backgroundColor: AppColors.success,
-      //     duration: Duration(seconds: 2),
-      //   ),
-      // );
+      await OnboardingService().completeOnboarding();
+
+      if (!mounted) return;
 
       // Navigate to the main app (clear onboarding stack)
       Navigator.pushAndRemoveUntil(
@@ -125,7 +121,7 @@ class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
                   child: Icon(
                     Icons.access_time,
                     size: 48,
-                    color: AppColors.textPrimary, 
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ),
@@ -209,8 +205,9 @@ class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
               child: Text(
                 text,
                 style: textTheme.bodyLarge?.copyWith(
-                  color:
-                      isSelected ? AppColors.primary : AppColors.textSecondary,
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),

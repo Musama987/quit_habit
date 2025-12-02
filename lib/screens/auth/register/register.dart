@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/utils/app_colors.dart';
+import 'package:quit_habit/services/auth_service.dart';
+import 'package:quit_habit/screens/onboarding/onboardingone.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,11 +15,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _agreedToTerms = false;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   @override
   void dispose() {
@@ -41,7 +46,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 18.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 18.0,
+              vertical: 18.0,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -74,16 +82,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   'Create an Account',
                   style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontSize: 20,
-                      ),
+                    color: AppColors.textPrimary,
+                    fontSize: 20,
+                  ),
                 ),
                 vSpace(6),
                 Text(
                   'Sign up now to get started with an account.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                   textAlign: TextAlign.center,
                 ),
 
@@ -97,7 +105,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     icon: Image.network(
                       'https://raw.githubusercontent.com/fluttercommunity/assets/main/packages/flutter_signin_button/assets/google_logo.png',
                       height: 18,
-                      errorBuilder: (c, e, s) => const Icon(Icons.g_mobiledata, size: 18),
+                      errorBuilder: (c, e, s) =>
+                          const Icon(Icons.g_mobiledata, size: 18),
                     ),
                     label: const Text('Sign up with Google'),
                     style: OutlinedButton.styleFrom(
@@ -105,7 +114,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       foregroundColor: AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       textStyle: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
@@ -115,12 +126,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 Row(
                   children: const [
-                    Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+                    Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1),
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Text('OR', style: TextStyle(color: AppColors.textTertiary, fontSize: 12)),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(
+                          color: AppColors.textTertiary,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
-                    Expanded(child: Divider(color: AppColors.border, thickness: 1)),
+                    Expanded(
+                      child: Divider(color: AppColors.border, thickness: 1),
+                    ),
                   ],
                 ),
 
@@ -132,10 +153,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     'Full Name*',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 vSpace(6),
@@ -152,17 +173,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     'Email Address*',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 vSpace(6),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(hintText: 'Enter your email'),
+                  decoration: const InputDecoration(
+                    hintText: 'Enter your email',
+                  ),
                 ),
 
                 vSpace(10),
@@ -173,10 +196,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     'Password*',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 vSpace(6),
@@ -187,10 +210,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: 'Enter password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off_outlined,
                         color: AppColors.textTertiary,
                       ),
-                      onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                      onPressed: () => setState(
+                        () => _isPasswordVisible = !_isPasswordVisible,
+                      ),
                     ),
                   ),
                 ),
@@ -203,10 +230,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     'Confirm Password*',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
                 vSpace(6),
@@ -217,10 +244,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     hintText: 'Confirm password',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off_outlined,
+                        _isConfirmPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off_outlined,
                         color: AppColors.textTertiary,
                       ),
-                      onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                      onPressed: () => setState(
+                        () => _isConfirmPasswordVisible =
+                            !_isConfirmPasswordVisible,
+                      ),
                     ),
                   ),
                 ),
@@ -234,7 +266,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       height: 20,
                       child: Checkbox(
                         value: _agreedToTerms,
-                        onChanged: (v) => setState(() => _agreedToTerms = v ?? false),
+                        onChanged: (v) =>
+                            setState(() => _agreedToTerms = v ?? false),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
@@ -243,11 +276,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: RichText(
                         text: TextSpan(
                           text: 'I have read and agree to the ',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textPrimary),
                           children: [
                             TextSpan(
                               text: 'Terms of Service',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ],
                         ),
@@ -261,8 +299,67 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: (_agreedToTerms && _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) ? () {} : null,
-                    child: const Text('Get Started'),
+                    onPressed:
+                        (_agreedToTerms &&
+                            _emailController.text.isNotEmpty &&
+                            _passwordController.text.isNotEmpty &&
+                            !_isLoading)
+                        ? () async {
+                            if (_passwordController.text !=
+                                _confirmPasswordController.text) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Passwords do not match'),
+                                ),
+                              );
+                              return;
+                            }
+
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            try {
+                              await _authService.signUpWithEmailAndPassword(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim(),
+                              );
+                              // You might want to update the user's display name here as well
+                              // await _authService.currentUser?.updateDisplayName(_fullNameController.text.trim());
+
+                              if (mounted) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const OnboardingOneScreen(),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(e.toString())),
+                                );
+                              }
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            }
+                          }
+                        : null,
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Get Started'),
                   ),
                 ),
 
@@ -271,10 +368,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Already have an account? ', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary)),
+                    Text(
+                      'Already have an account? ',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
                     InkWell(
                       onTap: () => Navigator.pop(context),
-                      child: Text('Log in', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                      child: Text(
+                        'Log in',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
