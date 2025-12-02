@@ -51,8 +51,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
   Future<void> _checkStatus() async {
     _user = FirebaseAuth.instance.currentUser;
     if (_user != null) {
-      _isOnboardingCompleted = await OnboardingService()
-          .isOnboardingCompleted();
+      _isOnboardingCompleted = await OnboardingService().isOnboardingCompleted(
+        _user!.uid,
+      );
     }
     if (mounted) {
       setState(() {

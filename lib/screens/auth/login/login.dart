@@ -7,6 +7,7 @@ import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/services/auth_service.dart';
 import 'package:quit_habit/services/onboarding_service.dart';
 import 'package:quit_habit/screens/navbar/navbar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // ... imports
 
@@ -57,7 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _checkOnboardingAndNavigate(BuildContext context) async {
     final onboardingService = OnboardingService();
-    final bool isCompleted = await onboardingService.isOnboardingCompleted();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final bool isCompleted = await onboardingService.isOnboardingCompleted(
+      user.uid,
+    );
 
     if (!mounted) return;
 

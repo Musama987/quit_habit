@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/services/auth_service.dart';
-import 'package:quit_habit/screens/onboarding/onboardingone.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -327,13 +326,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               // You might want to update the user's display name here as well
                               // await _authService.currentUser?.updateDisplayName(_fullNameController.text.trim());
 
+                              await _authService.signOut();
+
                               if (mounted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const OnboardingOneScreen(),
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Account created! Please log in.',
+                                    ),
+                                    backgroundColor: Colors.green,
                                   ),
                                 );
+                                Navigator.pop(context);
                               }
                             } catch (e) {
                               if (mounted) {

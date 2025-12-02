@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 import 'package:quit_habit/screens/navbar/navbar.dart';
 import 'package:quit_habit/services/onboarding_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QuestionnaireFiveScreen extends StatefulWidget {
   const QuestionnaireFiveScreen({super.key});
@@ -31,7 +32,10 @@ class _QuestionnaireFiveScreenState extends State<QuestionnaireFiveScreen> {
     Future.delayed(const Duration(milliseconds: 300), () async {
       if (!mounted) return;
 
-      await OnboardingService().completeOnboarding();
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await OnboardingService().completeOnboarding(user.uid);
+      }
 
       if (!mounted) return;
 
