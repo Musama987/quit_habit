@@ -48,22 +48,22 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // 1. Main Tracker Card
             _buildTrackerCard(textTheme),
-            
+
             const SizedBox(height: 24),
 
             // 2. Distractions Section
             _buildSectionHeader(
-              "Need a Distraction?", 
+              "Need a Distraction?",
               showViewAll: true,
               onViewAllPressed: () {
                 // Navigate to ToolsScreen when clicked
-               PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: const ToolsScreen(),
-                        withNavBar: false,
-                        pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                      );
-              }
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: const ToolsScreen(),
+                  withNavBar: false,
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              },
             ),
             const SizedBox(height: 12),
             Row(
@@ -71,9 +71,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Breathing Card
                 Expanded(
                   child: _buildDistractionCard(
-                    Icons.air, 
-                    "Breathing", 
-                    const Color(0xFFFFE2E2), 
+                    Icons.air,
+                    "Breathing",
+                    const Color(0xFFFFE2E2),
                     const Color(0xFFEF4444),
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
@@ -86,13 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Exercise Card - Connected to MovementScreen
                 Expanded(
                   child: _buildDistractionCard(
-                    Icons.show_chart, 
-                    "Exercise", 
-                    const Color(0xFFE0F2FE), 
+                    Icons.show_chart,
+                    "Exercise",
+                    const Color(0xFFE0F2FE),
                     const Color(0xFF3B82F6),
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
@@ -104,15 +104,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
-                
+
                 // Meditate Card (Placeholder for now)
                 Expanded(
                   child: _buildDistractionCard(
-                    Icons.self_improvement, 
-                    "Meditate", 
-                    const Color(0xFFDCFCE7), 
+                    Icons.self_improvement,
+                    "Meditate",
+                    const Color(0xFFDCFCE7),
                     const Color(0xFF10B981),
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
@@ -130,7 +130,19 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
 
             // 3. Weekly Progress
-            _buildSectionHeader("Weekly Progress"),
+            _buildSectionHeader(
+              "Weekly Progress",
+              showViewAll: true,
+              actionText: "Calendar",
+              onViewAllPressed: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: const CalendarScreen(),
+                  withNavBar: false,
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              },
+            ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -171,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // 6. Premium Banner
             _buildPremiumCard(textTheme),
-            
+
             const SizedBox(height: 40), // Bottom padding
           ],
         ),
@@ -209,7 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Keep Going!", style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+              Text(
+                "Keep Going!",
+                style: textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
               const Icon(Icons.emoji_events, color: Colors.amber, size: 24),
             ],
           ),
@@ -217,9 +234,18 @@ class _HomeScreenState extends State<HomeScreen> {
           RichText(
             text: TextSpan(
               text: "Day ",
-              style: textTheme.displayMedium?.copyWith(color: AppColors.textPrimary, fontSize: 28),
+              style: textTheme.displayMedium?.copyWith(
+                color: AppColors.textPrimary,
+                fontSize: 28,
+              ),
               children: [
-                TextSpan(text: "34", style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w900, fontSize: 34)),
+                TextSpan(
+                  text: "34",
+                  style: textTheme.displayMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 34,
+                  ),
+                ),
               ],
             ),
           ),
@@ -230,31 +256,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: LinearProgressIndicator(
               value: 0.4,
               backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF374151)), // Dark grey as per image
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF374151),
+              ), // Dark grey as per image
               minHeight: 8,
             ),
           ),
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const CalendarScreen()),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: const BorderSide(color: AppColors.primary),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: const Text("Complete", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
-                ),
-              ),
-              const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
@@ -266,22 +276,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
                   ),
-                  child: const Text("Relapse", style: TextStyle(fontWeight: FontWeight.w600)),
+                  child: const Text(
+                    "Relapse",
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
   // Updated to include onTap for navigation
-  Widget _buildDistractionCard(IconData icon, String label, Color bg, Color iconColor, {VoidCallback? onTap}) {
+  Widget _buildDistractionCard(
+    IconData icon,
+    String label,
+    Color bg,
+    Color iconColor, {
+    VoidCallback? onTap,
+  }) {
     return GestureDetector(
       onTap: onTap, // Trigger navigation if provided
       child: Container(
@@ -295,11 +316,21 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
               child: Icon(icon, color: iconColor, size: 22),
             ),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
+              ),
+            ),
           ],
         ),
       ),
@@ -311,7 +342,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Column(
       children: [
-        Text(day, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+        Text(
+          day,
+          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+        ),
         const SizedBox(height: 6),
         Container(
           width: 36,
@@ -323,7 +357,9 @@ class _HomeScreenState extends State<HomeScreen> {
           child: isEmpty
               ? null
               : Icon(
-                  color == Colors.blue ? Icons.check : (color == Colors.amber ? Icons.check : Icons.close),
+                  color == Colors.blue
+                      ? Icons.check
+                      : (color == Colors.amber ? Icons.check : Icons.close),
                   color: Colors.white,
                   size: 20,
                 ),
@@ -332,28 +368,35 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
- Widget _buildChallengeCard(TextTheme textTheme) {
+  Widget _buildChallengeCard(TextTheme textTheme) {
     return Container(
       // 1. Outer Container: Creates the Gradient Border Effect
       decoration: BoxDecoration(
         // This gradient goes from Blue (Left) to White (Right), creating the left-side glow
         gradient: const LinearGradient(
-          colors: [AppColors.primary, Colors.white], 
+          colors: [AppColors.primary, Colors.white],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          stops: [0.01, 0.01], // Adjusts how far the blue fades across the border
+          stops: [
+            0.01,
+            0.01,
+          ], // Adjusts how far the blue fades across the border
         ),
         borderRadius: BorderRadius.circular(24), // Outer radius
         boxShadow: [AppColors.softShadow],
       ),
-      padding: const EdgeInsets.all(6), // This padding determines the border width (2px)
-      
+      padding: const EdgeInsets.all(
+        6,
+      ), // This padding determines the border width (2px)
+
       child: Container(
         // 2. Inner Container: The actual white card content
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(22), // Inner radius (Outer - Padding)
+          borderRadius: BorderRadius.circular(
+            22,
+          ), // Inner radius (Outer - Padding)
         ),
         child: Column(
           children: [
@@ -368,63 +411,63 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.bolt, color: Color(0xFFF59E0B), size: 30),
             ),
             const SizedBox(height: 12),
-            
+
             // Title
             Text(
-              "7-Day Warrior", 
+              "7-Day Warrior",
               style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
                 fontSize: 17,
-                color: AppColors.textPrimary
-              )
+                color: AppColors.textPrimary,
+              ),
             ),
             const SizedBox(height: 6),
-            
+
             // Subtitle
             Text(
-              "Stay smoke-free for 7 consecutive days", 
+              "Stay smoke-free for 7 consecutive days",
               style: textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 height: 1.4,
                 fontSize: 13,
-              ), 
-              textAlign: TextAlign.center
+              ),
+              textAlign: TextAlign.center,
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Progress Section
             Row(
               children: [
                 Text(
-                  "Progress", 
+                  "Progress",
                   style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary, 
+                    color: AppColors.textSecondary,
                     fontSize: 13,
-                    fontWeight: FontWeight.w500
-                  )
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const Spacer(),
                 Text(
-                  "71%", 
+                  "71%",
                   style: textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold, 
-                    color: AppColors.textPrimary, 
-                    fontSize: 13
-                  )
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // Progress Bar
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: const LinearProgressIndicator(
-                value: 0.71, 
-                minHeight: 8, 
-                backgroundColor: Color(0xFFF3F4F6), 
-                valueColor: AlwaysStoppedAnimation(AppColors.primary)
+                value: 0.71,
+                minHeight: 8,
+                backgroundColor: Color(0xFFF3F4F6),
+                valueColor: AlwaysStoppedAnimation(AppColors.primary),
               ),
             ),
           ],
@@ -432,19 +475,37 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildPlanCard(TextTheme textTheme) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [AppColors.softShadow]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [AppColors.softShadow],
+      ),
       child: Column(
         children: [
-          const CircleAvatar(backgroundColor: Color(0xFFDCFCE7), child: Icon(Icons.spa, color: AppColors.success, size: 20)),
+          const CircleAvatar(
+            backgroundColor: Color(0xFFDCFCE7),
+            child: Icon(Icons.spa, color: AppColors.success, size: 20),
+          ),
           const SizedBox(height: 8),
-          Text("Day 3 • Active", style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 12)),
+          Text(
+            "Day 3 • Active",
+            style: TextStyle(
+              color: AppColors.success,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
           const SizedBox(height: 16),
           _buildCheckItem("Make commitment to quit smoking day by day.", true),
           const SizedBox(height: 12),
-          _buildCheckItem("Establish immediate health benefits with quit habit", false),
+          _buildCheckItem(
+            "Establish immediate health benefits with quit habit",
+            false,
+          ),
         ],
       ),
     );
@@ -454,9 +515,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(isChecked ? Icons.check_circle : Icons.circle, color: isChecked ? AppColors.success : Colors.grey[300], size: 20),
+        Icon(
+          isChecked ? Icons.check_circle : Icons.circle,
+          color: isChecked ? AppColors.success : Colors.grey[300],
+          size: 20,
+        ),
         const SizedBox(width: 10),
-        Expanded(child: Text(text, style: const TextStyle(fontSize: 13, color: AppColors.textPrimary))),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+          ),
+        ),
       ],
     );
   }
@@ -464,22 +534,50 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPremiumCard(TextTheme textTheme) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), boxShadow: [AppColors.softShadow]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [AppColors.softShadow],
+      ),
       child: Column(
         children: [
-          const Icon(Icons.workspace_premium, color: AppColors.premium, size: 32),
+          const Icon(
+            Icons.workspace_premium,
+            color: AppColors.premium,
+            size: 32,
+          ),
           const SizedBox(height: 8),
-          Text("Unlock Premium", style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            "Unlock Premium",
+            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
-          Text("Get unlimited challenges, advanced analytics,\nand exclusive tools!", textAlign: TextAlign.center, style: textTheme.bodyMedium?.copyWith(fontSize: 12)),
+          Text(
+            "Get unlimited challenges, advanced analytics,\nand exclusive tools!",
+            textAlign: TextAlign.center,
+            style: textTheme.bodyMedium?.copyWith(fontSize: 12),
+          ),
           const SizedBox(height: 16),
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(gradient: AppColors.premiumGradient, borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(
+              gradient: AppColors.premiumGradient,
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: ElevatedButton(
               onPressed: () {},
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, padding: const EdgeInsets.symmetric(vertical: 14)),
-              child: const Text("Upgrade to Pro", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text(
+                "Upgrade to Pro",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
         ],
@@ -488,23 +586,51 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Updated to accept an optional VoidCallback for custom navigation
-  Widget _buildSectionHeader(String title, {bool showViewAll = false, VoidCallback? onViewAllPressed}) {
+  Widget _buildSectionHeader(
+    String title, {
+    bool showViewAll = false,
+    String actionText = "View All",
+    VoidCallback? onViewAllPressed,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
         if (showViewAll)
           TextButton(
-            onPressed: onViewAllPressed ?? () {}, // Use callback or empty function
-            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero, tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-            child: const Row(
+            onPressed:
+                onViewAllPressed ?? () {}, // Use callback or empty function
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Row(
               children: [
-                Text("View All", style: TextStyle(fontSize: 12, color: AppColors.primary, fontWeight: FontWeight.w600)),
-                SizedBox(width: 2),
-                Icon(Icons.arrow_forward, size: 12, color: AppColors.primary),
+                Text(
+                  actionText,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(width: 2),
+                const Icon(
+                  Icons.arrow_forward,
+                  size: 12,
+                  color: AppColors.primary,
+                ),
               ],
             ),
-          )
+          ),
       ],
     );
   }
@@ -512,16 +638,48 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildTopStat(IconData icon, String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-      child: Row(children: [Icon(icon, size: 14, color: color), const SizedBox(width: 4), Text(text, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: color))]),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildProButton() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(gradient: AppColors.premiumGradient, borderRadius: BorderRadius.circular(20)),
-      child: const Row(children: [Icon(Icons.workspace_premium, color: Colors.white, size: 14), SizedBox(width: 4), Text("Pro", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12))]),
+      decoration: BoxDecoration(
+        gradient: AppColors.premiumGradient,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.workspace_premium, color: Colors.white, size: 14),
+          SizedBox(width: 4),
+          Text(
+            "Pro",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
