@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Stream to listen to auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
@@ -10,16 +12,55 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 
+  // Save or update user in Firestore
+  Future<void> _saveUserToFirestore(User user) async {
+    print('Attempting to save user ${user.uid} to Firestore...');
+    try {
+      final userDoc = _firestore.collection('users').doc(user.uid);
+      final docSnapshot = await userDoc.get();
+
+      if (!docSnapshot.exists) {
+        print('User document does not exist. Creating new document...');
+        // New user: Create document
+        await userDoc.set({
+          'uid': user.uid,
+          'email': user.email,
+          'displayName': user.displayName ?? '',
+          'photoURL': user.photoURL ?? '',
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+        print('User document created successfully.');
+      } else {
+        print('User document exists. Updating lastLogin...');
+        // Existing user: Update last login
+        await userDoc.update({'lastLogin': FieldValue.serverTimestamp()});
+        print('User document updated successfully.');
+      }
+    } catch (e) {
+      print('Error saving user to Firestore: $e');
+      if (e.toString().contains('permission-denied')) {
+        print(
+          'Check your Firestore Security Rules in the Firebase Console. They might be set to "allow write: if false;".',
+        );
+      }
+    }
+  }
+
   // Sign in with email and password
   Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      return await _auth.signInWithEmailAndPassword(
+      UserCredential cred = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      if (cred.user != null) {
+        await _saveUserToFirestore(cred.user!);
+      }
+      return cred;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -33,10 +74,14 @@ class AuthService {
     required String password,
   }) async {
     try {
-      return await _auth.createUserWithEmailAndPassword(
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      if (cred.user != null) {
+        await _saveUserToFirestore(cred.user!);
+      }
+      return cred;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
@@ -83,7 +128,15 @@ class AuthService {
       );
 
       // Once signed in, return the UserCredential
-      return await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
+
+      if (userCredential.user != null) {
+        await _saveUserToFirestore(userCredential.user!);
+      }
+
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     } catch (e) {
