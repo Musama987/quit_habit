@@ -1,13 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/breathing/breathing.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/meditation/meditation.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/physical_workout/movement.dart';
-import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
-import 'package:quit_habit/utils/app_colors.dart';
-import 'package:quit_habit/screens/navbar/home/widgets/calender/calender.dart';
 import 'package:quit_habit/screens/navbar/home/widgets/relapse/relapse.dart';
+import 'package:quit_habit/screens/navbar/home/widgets/tools/tools.dart';
+import 'package:quit_habit/services/habit_service.dart';
+import 'package:quit_habit/utils/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,197 +19,251 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final HabitService _habitService = HabitService();
+  final User? _user = FirebaseAuth.instance.currentUser;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      // Custom App Bar to match the top stats row
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundLight,
-        elevation: 0,
-        titleSpacing: 20,
-        automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            _buildTopStat(Icons.shield_outlined, "0%", Colors.cyan),
-            const SizedBox(width: 8),
-            _buildTopStat(Icons.diamond_outlined, "1", AppColors.primary),
-            const SizedBox(width: 8),
-            _buildTopStat(Icons.monetization_on_outlined, "0", Colors.amber),
-            const Spacer(),
-            _buildProButton(),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 1. Main Tracker Card
-            _buildTrackerCard(textTheme),
+    if (_user == null) {
+      return const Scaffold(
+        body: Center(child: Text("Please log in to track your progress")),
+      );
+    }
 
-            const SizedBox(height: 24),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _habitService.getUserHabitStream(_user!.uid),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text("Error: ${snapshot.error}")),
+          );
+        }
 
-            // 2. Distractions Section
-            _buildSectionHeader(
-              "Need a Distraction?",
-              showViewAll: true,
-              onViewAllPressed: () {
-                // Navigate to ToolsScreen when clicked
-                PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: const ToolsScreen(),
-                  withNavBar: false,
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            Row(
+        // Loading state or initial state
+        if (!snapshot.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final data = snapshot.data!.data() as Map<String, dynamic>?;
+        final Timestamp? startDateTs = data?['startDate'] as Timestamp?;
+        final List<dynamic> relapseDatesRaw =
+            data?['relapseDates'] as List<dynamic>? ?? [];
+
+        final DateTime? startDate = startDateTs?.toDate();
+        final List<DateTime> relapseDates = relapseDatesRaw
+            .map((e) => (e as Timestamp).toDate())
+            .toList();
+
+        // Calculate Streak
+        int streak = 0;
+        bool isActive = false;
+
+        if (startDate != null) {
+          isActive = true;
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          final start = DateTime(
+            startDate.year,
+            startDate.month,
+            startDate.day,
+          );
+
+          if (relapseDates.isNotEmpty) {
+            // Sort to find latest relapse
+            relapseDates.sort((a, b) => a.compareTo(b));
+            final lastRelapse = relapseDates.last;
+            final lastRelapseDay = DateTime(
+              lastRelapse.year,
+              lastRelapse.month,
+              lastRelapse.day,
+            );
+
+            if (lastRelapseDay.isAtSameMomentAs(today)) {
+              streak = 0;
+            } else {
+              streak = today.difference(lastRelapseDay).inDays;
+            }
+          } else {
+            // No relapses
+            streak = today.difference(start).inDays + 1;
+          }
+        }
+
+        return Scaffold(
+          backgroundColor: AppColors.backgroundLight,
+          appBar: AppBar(
+            backgroundColor: AppColors.backgroundLight,
+            elevation: 0,
+            titleSpacing: 20,
+            automaticallyImplyLeading: false,
+            title: Row(
               children: [
-                // Breathing Card
-                Expanded(
-                  child: _buildDistractionCard(
-                    Icons.air,
-                    "Breathing",
-                    const Color(0xFFFFE2E2),
-                    const Color(0xFFEF4444),
-                    onTap: () {
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: const BreathingScreen(),
-                        withNavBar: false,
-                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
-                      );
-                    },
-                  ),
+                _buildTopStat(Icons.shield_outlined, "0%", Colors.cyan),
+                const SizedBox(width: 8),
+                _buildTopStat(Icons.diamond_outlined, "1", AppColors.primary),
+                const SizedBox(width: 8),
+                _buildTopStat(
+                  Icons.monetization_on_outlined,
+                  "0",
+                  Colors.amber,
                 ),
-                const SizedBox(width: 12),
-
-                // Exercise Card - Connected to MovementScreen
-                Expanded(
-                  child: _buildDistractionCard(
-                    Icons.show_chart,
-                    "Exercise",
-                    const Color(0xFFE0F2FE),
-                    const Color(0xFF3B82F6),
-                    onTap: () {
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: const MovementScreen(),
-                        withNavBar: false,
-                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                // Meditate Card (Placeholder for now)
-                Expanded(
-                  child: _buildDistractionCard(
-                    Icons.self_improvement,
-                    "Meditate",
-                    const Color(0xFFDCFCE7),
-                    const Color(0xFF10B981),
-                    onTap: () {
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: const MeditationScreen(),
-                        withNavBar: false,
-                        pageTransitionAnimation: PageTransitionAnimation.sizeUp,
-                      );
-                    },
-                  ),
-                ),
+                const Spacer(),
+                _buildProButton(),
               ],
             ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. Main Tracker Card
+                _buildTrackerCard(textTheme, streak, isActive),
 
-            const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-            // 3. Weekly Progress
-            _buildSectionHeader(
-              "Weekly Progress",
-              showViewAll: true,
-              actionText: "Calendar",
-              onViewAllPressed: () {
-                PersistentNavBarNavigator.pushNewScreen(
-                  context,
-                  screen: const CalendarScreen(),
-                  withNavBar: false,
-                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                );
-              },
+                // 2. Distractions Section
+                _buildSectionHeader(
+                  "Need a Distraction?",
+                  showViewAll: true,
+                  onViewAllPressed: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: const ToolsScreen(),
+                      withNavBar: false,
+                      pageTransitionAnimation:
+                          PageTransitionAnimation.cupertino,
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildDistractionCard(
+                        Icons.air,
+                        "Breathing",
+                        const Color(0xFFFFE2E2),
+                        const Color(0xFFEF4444),
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: const BreathingScreen(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.sizeUp,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildDistractionCard(
+                        Icons.show_chart,
+                        "Exercise",
+                        const Color(0xFFE0F2FE),
+                        const Color(0xFF3B82F6),
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: const MovementScreen(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.sizeUp,
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildDistractionCard(
+                        Icons.self_improvement,
+                        "Meditate",
+                        const Color(0xFFDCFCE7),
+                        const Color(0xFF10B981),
+                        onTap: () {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: const MeditationScreen(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.sizeUp,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                // 3. Weekly Progress
+                _buildSectionHeader(
+                  "Weekly Progress",
+                  showViewAll: true,
+                  actionText: "Calendar",
+                  onViewAllPressed: () {
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: const CalendarScreen(
+                        mode: CalendarMode.reportRelapse,
+                      ),
+                      withNavBar: false,
+                      pageTransitionAnimation:
+                          PageTransitionAnimation.cupertino,
+                    );
+                  },
+                ),
+                const SizedBox(height: 12),
+                _buildWeeklyProgress(startDate, relapseDates),
+
+                // 4. Active Challenge
+                _buildSectionHeader("Active Challenge"),
+                const SizedBox(height: 12),
+                _buildChallengeCard(textTheme),
+
+                const SizedBox(height: 24),
+
+                // 5. Today's Plan
+                _buildSectionHeader("Today's Plan", showViewAll: true),
+                const SizedBox(height: 12),
+                _buildPlanCard(textTheme),
+
+                const SizedBox(height: 24),
+
+                // 6. Premium Banner
+                _buildPremiumCard(textTheme),
+
+                const SizedBox(height: 40),
+              ],
             ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [AppColors.softShadow],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildDayBubble("Thu", true, Colors.blue),
-                  _buildDayBubble("Fri", true, Colors.red),
-                  _buildDayBubble("Sat", true, Colors.blue),
-                  _buildDayBubble("Sun", true, Colors.blue),
-                  _buildDayBubble("Mon", true, Colors.amber),
-                  _buildDayBubble("Tue", false, Colors.grey),
-                  _buildDayBubble("Wed", false, Colors.grey),
-                ],
-              ),
+          ),
+          floatingActionButton: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight,
+              shape: BoxShape.circle,
+              boxShadow: [AppColors.softShadow],
             ),
-
-            const SizedBox(height: 24),
-
-            // 4. Active Challenge
-            _buildSectionHeader("Active Challenge"),
-            const SizedBox(height: 12),
-            _buildChallengeCard(textTheme),
-
-            const SizedBox(height: 24),
-
-            // 5. Today's Plan
-            _buildSectionHeader("Today's Plan", showViewAll: true),
-            const SizedBox(height: 12),
-            _buildPlanCard(textTheme),
-
-            const SizedBox(height: 24),
-
-            // 6. Premium Banner
-            _buildPremiumCard(textTheme),
-
-            const SizedBox(height: 40), // Bottom padding
-          ],
-        ),
-      ),
-      // Floating Action Button for Chat
-      floatingActionButton: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          shape: BoxShape.circle,
-          boxShadow: [AppColors.softShadow],
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
-          onPressed: () {},
-        ),
-      ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.chat_bubble_outline,
+                color: AppColors.primary,
+              ),
+              onPressed: () {},
+            ),
+          ),
+        );
+      },
     );
   }
 
   // --- Widgets Methods ---
 
-  Widget _buildTrackerCard(TextTheme textTheme) {
+  Widget _buildTrackerCard(TextTheme textTheme, int streak, bool isActive) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -222,9 +278,10 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Keep Going!",
+                "Ready to start\nBegin",
                 style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
+                  height: 1.2,
                 ),
               ),
               const Icon(Icons.emoji_events, color: Colors.amber, size: 24),
@@ -240,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               children: [
                 TextSpan(
-                  text: "34",
+                  text: "$streak",
                   style: textTheme.displayMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 34,
@@ -249,32 +306,38 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          // Progress Bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: 0.4,
-              backgroundColor: Colors.grey[300],
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF374151),
-              ), // Dark grey as per image
-              minHeight: 8,
-            ),
-          ),
           const SizedBox(height: 20),
+
+          // Removed Progress Bar as requested
           Row(
             children: [
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const RelapseScreen()),
-                    );
+                    if (isActive) {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: const RelapseScreen(),
+                        withNavBar: false,
+                        pageTransitionAnimation:
+                            PageTransitionAnimation.cupertino,
+                      );
+                    } else {
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: const CalendarScreen(
+                          mode: CalendarMode.startRoutine,
+                        ),
+                        withNavBar: false,
+                        pageTransitionAnimation:
+                            PageTransitionAnimation.cupertino,
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: isActive
+                        ? AppColors.error
+                        : AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -282,9 +345,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Relapse",
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  child: Text(
+                    isActive ? "Report Relapse" : "Start Your Routine",
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -295,7 +358,116 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Updated to include onTap for navigation
+  Widget _buildWeeklyProgress(
+    DateTime? startDate,
+    List<DateTime> relapseDates,
+  ) {
+    // Calculate dates for the current week (Mon-Sun)
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    // Find Monday of this week
+    // weekday: Mon=1, Sun=7
+    final monday = today.subtract(Duration(days: today.weekday - 1));
+
+    List<Widget> dayBubbles = [];
+    final weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    for (int i = 0; i < 7; i++) {
+      final date = monday.add(Duration(days: i));
+      final dayName = weekDays[i];
+
+      // Determine status
+      Color color = Colors.grey; // Default/Future
+      bool isChecked = false;
+      bool isRelapse = false;
+
+      if (date.isAfter(today)) {
+        // Future days
+        color = Colors.grey;
+        isChecked = false;
+      } else {
+        // Past or Today
+        if (startDate == null ||
+            date.isBefore(
+              DateTime(startDate.year, startDate.month, startDate.day),
+            )) {
+          // Before start date
+          color = Colors.grey;
+          isChecked = false;
+        } else {
+          // Active period
+          // Check if relapse
+          bool isRelapseDay = relapseDates.any(
+            (d) =>
+                d.year == date.year &&
+                d.month == date.month &&
+                d.day == date.day,
+          );
+
+          if (isRelapseDay) {
+            color = AppColors.error; // Red for relapse
+            isRelapse = true;
+            isChecked = true; // Show icon
+          } else {
+            color = Colors.blue; // Or primary color for success
+            isChecked = true;
+          }
+        }
+      }
+
+      dayBubbles.add(
+        _buildDayBubble(dayName, isChecked, color, isRelapse: isRelapse),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [AppColors.softShadow],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: dayBubbles,
+      ),
+    );
+  }
+
+  Widget _buildDayBubble(
+    String day,
+    bool isChecked,
+    Color color, {
+    bool isRelapse = false,
+  }) {
+    bool isEmpty = color == Colors.grey;
+
+    return Column(
+      children: [
+        Text(
+          day,
+          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: isEmpty ? Colors.grey[100] : color,
+            shape: BoxShape.circle,
+          ),
+          child: isEmpty
+              ? null
+              : Icon(
+                  isRelapse ? Icons.close : Icons.check,
+                  color: Colors.white,
+                  size: 20,
+                ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDistractionCard(
     IconData icon,
     String label,
@@ -304,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
     VoidCallback? onTap,
   }) {
     return GestureDetector(
-      onTap: onTap, // Trigger navigation if provided
+      onTap: onTap,
       child: Container(
         height: 100,
         decoration: BoxDecoration(
@@ -337,82 +509,37 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDayBubble(String day, bool isChecked, Color color) {
-    bool isEmpty = color == Colors.grey;
-
-    return Column(
-      children: [
-        Text(
-          day,
-          style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-        ),
-        const SizedBox(height: 6),
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: isEmpty ? Colors.grey[100] : color,
-            shape: BoxShape.circle,
-          ),
-          child: isEmpty
-              ? null
-              : Icon(
-                  color == Colors.blue
-                      ? Icons.check
-                      : (color == Colors.amber ? Icons.check : Icons.close),
-                  color: Colors.white,
-                  size: 20,
-                ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildChallengeCard(TextTheme textTheme) {
     return Container(
-      // 1. Outer Container: Creates the Gradient Border Effect
       decoration: BoxDecoration(
-        // This gradient goes from Blue (Left) to White (Right), creating the left-side glow
         gradient: const LinearGradient(
           colors: [AppColors.primary, Colors.white],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          stops: [
-            0.01,
-            0.01,
-          ], // Adjusts how far the blue fades across the border
+          stops: [0.01, 0.01],
         ),
-        borderRadius: BorderRadius.circular(24), // Outer radius
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [AppColors.softShadow],
       ),
-      padding: const EdgeInsets.all(
-        6,
-      ), // This padding determines the border width (2px)
-
+      padding: const EdgeInsets.all(6),
       child: Container(
-        // 2. Inner Container: The actual white card content
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(
-            22,
-          ), // Inner radius (Outer - Padding)
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
           children: [
-            // Icon Background
             Container(
-              width: 56, // Slightly larger touch target
+              width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.primaryLight, // Very light blue background
+                color: AppColors.primaryLight,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: const Icon(Icons.bolt, color: Color(0xFFF59E0B), size: 30),
             ),
             const SizedBox(height: 12),
-
-            // Title
             Text(
               "7-Day Warrior",
               style: textTheme.titleMedium?.copyWith(
@@ -422,8 +549,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 6),
-
-            // Subtitle
             Text(
               "Stay smoke-free for 7 consecutive days",
               style: textTheme.bodyMedium?.copyWith(
@@ -433,10 +558,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 24),
-
-            // Progress Section
             Row(
               children: [
                 Text(
@@ -459,8 +581,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 8),
-
-            // Progress Bar
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: const LinearProgressIndicator(
@@ -585,7 +705,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Updated to accept an optional VoidCallback for custom navigation
   Widget _buildSectionHeader(
     String title, {
     bool showViewAll = false,
@@ -605,8 +724,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         if (showViewAll)
           TextButton(
-            onPressed:
-                onViewAllPressed ?? () {}, // Use callback or empty function
+            onPressed: onViewAllPressed ?? () {},
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,
               minimumSize: Size.zero,

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quit_habit/services/habit_service.dart';
 import 'package:quit_habit/utils/app_colors.dart';
 
 class RelapseScreen extends StatefulWidget {
@@ -13,6 +15,9 @@ class _RelapseScreenState extends State<RelapseScreen> {
   DateTime _selectedDate = DateTime.now();
   int? _selectedTriggerIndex;
   bool _coinPenaltyEnabled = true;
+  final HabitService _habitService = HabitService();
+  final String? _userId = FirebaseAuth.instance.currentUser?.uid;
+  bool _isLoading = false;
 
   // Data for the grid options
   final List<Map<String, dynamic>> _triggers = [
@@ -27,8 +32,18 @@ class _RelapseScreenState extends State<RelapseScreen> {
   // Helper to format date
   String _formatDate(DateTime date) {
     const List<String> months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return "${months[date.month - 1]} ${date.day}, ${date.year}";
   }
@@ -59,6 +74,45 @@ class _RelapseScreenState extends State<RelapseScreen> {
     }
   }
 
+  Future<void> _confirmRelapse() async {
+    if (_userId == null) return;
+    if (_selectedTriggerIndex == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a trigger reason')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final reason = _triggers[_selectedTriggerIndex!]['label'] as String;
+      await _habitService.reportRelapse(
+        _userId!,
+        _selectedDate,
+        reason: reason,
+      );
+
+      if (mounted) {
+        Navigator.pop(context); // Close screen
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -77,7 +131,10 @@ class _RelapseScreenState extends State<RelapseScreen> {
 
               // --- 2. Main Content ---
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 10.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -104,10 +161,9 @@ class _RelapseScreenState extends State<RelapseScreen> {
                     _buildCoinPenaltyCard(textTheme),
 
                     const SizedBox(height: 24), // Spacing before buttons
-
                     // --- 3. Bottom Buttons (Scrolls with body) ---
                     _buildBottomButtons(context),
-                    
+
                     const SizedBox(height: 20), // Bottom padding
                   ],
                 ),
@@ -124,18 +180,12 @@ class _RelapseScreenState extends State<RelapseScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: AppColors.backgroundLight,
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.withOpacity(0.2)),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: AppColors.error,
-            size: 26,
-          ),
+          const Icon(Icons.error_outline, color: AppColors.error, size: 26),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -236,7 +286,8 @@ class _RelapseScreenState extends State<RelapseScreen> {
   Widget _buildTriggerGrid(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(), // Disable grid's own scrolling
+      physics:
+          const NeverScrollableScrollPhysics(), // Disable grid's own scrolling
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10,
@@ -271,7 +322,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
                         color: AppColors.primary.withOpacity(0.1),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
-                      )
+                      ),
                     ]
                   : [],
             ),
@@ -298,10 +349,10 @@ class _RelapseScreenState extends State<RelapseScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 12,
-                      ),
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -380,11 +431,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.info_outline,
-                size: 16,
-                color: iconOrange,
-              ),
+              const Icon(Icons.info_outline, size: 16, color: iconOrange),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -423,9 +470,7 @@ class _RelapseScreenState extends State<RelapseScreen> {
         const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+            onPressed: _isLoading ? null : _confirmRelapse,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -435,7 +480,16 @@ class _RelapseScreenState extends State<RelapseScreen> {
               ),
               elevation: 0,
             ),
-            child: const Text("Confirm"),
+            child: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Text("Confirm"),
           ),
         ),
       ],
